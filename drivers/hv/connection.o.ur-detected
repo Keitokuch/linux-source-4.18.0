@@ -1,0 +1,1 @@
+drivers/hv/connection.o-.text-3f drivers/hv/connection.c .text vmbus_set_event callq *%rax

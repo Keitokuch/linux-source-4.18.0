@@ -1,0 +1,4 @@
+arch/x86/hyperv/mmu.o-.text-394 arch/x86/hyperv/mmu.c .text hyperv_flush_tlb_others_ex callq *%rax
+arch/x86/hyperv/mmu.o-.text-565 arch/x86/hyperv/mmu.c .text hyperv_flush_tlb_others_ex callq *%r15
+arch/x86/hyperv/mmu.o-.text-875 arch/x86/hyperv/mmu.c .text hyperv_flush_tlb_others callq *%rax
+arch/x86/hyperv/mmu.o-.text-951 arch/x86/hyperv/mmu.c .text hyperv_flush_tlb_others callq *%r14

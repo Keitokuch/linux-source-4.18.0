@@ -1,0 +1,1 @@
+arch/x86/kvm/vmx.o-.text-44f9 arch/x86/kvm/vmx.c .text vmx_handle_external_intr callq *%rax

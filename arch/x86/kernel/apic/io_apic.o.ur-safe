@@ -1,0 +1,11 @@
+arch/x86/kernel/apic/io_apic.o-.init.text-174
+arch/x86/kernel/apic/io_apic.o-.init.text-17e
+arch/x86/kernel/apic/io_apic.o-.init.text-21c
+arch/x86/kernel/apic/io_apic.o-.init.text-a39
+arch/x86/kernel/apic/io_apic.o-.init.text-a44
+arch/x86/kernel/apic/io_apic.o-.init.text-f1a
+arch/x86/kernel/apic/io_apic.o-.init.text-f49
+arch/x86/kernel/apic/io_apic.o-.text-1e60
+arch/x86/kernel/apic/io_apic.o-.text-1e6a
+arch/x86/kernel/apic/io_apic.o-.text-1f17
+arch/x86/kernel/apic/io_apic.o-.text-4

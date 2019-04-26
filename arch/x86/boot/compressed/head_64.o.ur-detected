@@ -1,0 +1,4 @@
+arch/x86/boot/compressed/head_64.o-.head.text-2e7 arch/x86/boot/compressed/head_64.S .head.text trampoline_return jmpq *%rax
+arch/x86/boot/compressed/head_64.o-.head.text-37e arch/x86/boot/compressed/head_64.S .head.text fail jmpq *%rax
+arch/x86/boot/compressed/head_64.o-.text-41 arch/x86/boot/compressed/head_64.S .text relocated jmpq *%rax
+arch/x86/boot/compressed/head_64.o-.text-cd arch/x86/boot/compressed/head_64.S .text paging_enabled jmpq *%rdi

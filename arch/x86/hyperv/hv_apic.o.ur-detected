@@ -1,0 +1,2 @@
+arch/x86/hyperv/hv_apic.o-.text-216 arch/x86/hyperv/hv_apic.c .text __send_ipi_mask callq *%rsi
+arch/x86/hyperv/hv_apic.o-.text-2bd arch/x86/hyperv/hv_apic.c .text __send_ipi_mask callq *%rbx

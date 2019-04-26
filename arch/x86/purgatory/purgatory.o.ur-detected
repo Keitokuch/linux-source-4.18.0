@@ -1,0 +1,4 @@
+arch/x86/purgatory/purgatory.o-.text-24 arch/x86/purgatory/purgatory.c .text purgatory callq *%rax
+arch/x86/purgatory/purgatory.o-.text-4b arch/x86/purgatory/purgatory.c .text purgatory callq *%rax
+arch/x86/purgatory/purgatory.o-.text-6a arch/x86/purgatory/purgatory.c .text purgatory callq *%rax
+arch/x86/purgatory/purgatory.o-.text-8a arch/x86/purgatory/purgatory.c .text purgatory callq *%rax

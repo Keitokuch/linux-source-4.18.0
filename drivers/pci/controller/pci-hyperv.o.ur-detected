@@ -1,0 +1,1 @@
+drivers/pci/controller/pci-hyperv.o-.text-bdf drivers/pci/controller/pci-hyperv.c .text hv_irq_unmask callq *%r12
