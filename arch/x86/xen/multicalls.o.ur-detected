@@ -1,1 +1,0 @@
-arch/x86/xen/multicalls.o-.text-79 arch/x86/xen/multicalls.c .text xen_mc_flush callq *%rax

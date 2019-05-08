@@ -1,7 +1,0 @@
-drivers/firmware/efi/libstub/tpm.o-.text-159 drivers/firmware/efi/libstub/tpm.c .text efi_retrieve_tpm2_eventlog callq *%r8
-drivers/firmware/efi/libstub/tpm.o-.text-196 drivers/firmware/efi/libstub/tpm.c .text efi_retrieve_tpm2_eventlog callq *%r10
-drivers/firmware/efi/libstub/tpm.o-.text-1ee drivers/firmware/efi/libstub/tpm.c .text efi_retrieve_tpm2_eventlog callq *%r8
-drivers/firmware/efi/libstub/tpm.o-.text-296 drivers/firmware/efi/libstub/tpm.c .text efi_retrieve_tpm2_eventlog callq *%rcx
-drivers/firmware/efi/libstub/tpm.o-.text-2bf drivers/firmware/efi/libstub/tpm.c .text efi_retrieve_tpm2_eventlog callq *%rdx
-drivers/firmware/efi/libstub/tpm.o-.text-63 drivers/firmware/efi/libstub/tpm.c .text efi_enable_reset_attack_mitigation callq *%r10
-drivers/firmware/efi/libstub/tpm.o-.text-a7 drivers/firmware/efi/libstub/tpm.c .text efi_enable_reset_attack_mitigation callq *%r10

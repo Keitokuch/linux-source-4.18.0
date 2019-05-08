@@ -1,2 +1,0 @@
-arch/x86/boot/compressed/kaslr_64.o-.text-161 arch/x86/boot/compressed/kaslr_64.c .text ident_pud_init callq *(%r14)
-arch/x86/boot/compressed/kaslr_64.o-.text-2f7 arch/x86/boot/compressed/kaslr_64.c .text kernel_ident_mapping_init callq *(%r15)

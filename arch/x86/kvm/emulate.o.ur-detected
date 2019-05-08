@@ -1,5 +1,0 @@
-arch/x86/kvm/emulate.o-.text-3708 arch/x86/kvm/emulate.c .text fastop callq *%rsi
-arch/x86/kvm/emulate.o-.text-980a arch/x86/kvm/emulate.c .text em_loop callq *%rdx
-arch/x86/kvm/emulate.o-.text-b9e9 arch/x86/kvm/emulate.c .text x86_emulate_insn callq *%rax
-arch/x86/kvm/emulate.o-.text-be24 arch/x86/kvm/emulate.c .text x86_emulate_insn callq *%rax
-arch/x86/kvm/emulate.o-.text-be60 arch/x86/kvm/emulate.c .text x86_emulate_insn callq *%rax

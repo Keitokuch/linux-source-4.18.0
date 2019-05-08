@@ -1,1 +1,0 @@
-drivers/xen/privcmd.o-.text-a71 drivers/xen/privcmd.c .text privcmd_ioctl callq *%rax
