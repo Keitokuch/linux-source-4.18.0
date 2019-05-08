@@ -3431,7 +3431,7 @@ static void __sched notrace __schedule(bool preempt)
 	/*
 	 * JC Sched info logging
 	 */
-	printk("JC sched: %d, %d, %lld, %d, %d, %lld<<<", cpu, rq->nr_running, rq->nr_switches, prev->pid, prev->prio, prev->start_time);
+	printk(KERN_DEBUG "JC sched: %d, %d, %lld, %d, %d, %lld<<<", cpu, rq->nr_running, rq->nr_switches, prev->pid, prev->prio, prev->start_time);
 	
 	/*	
 	 * Make sure that signal_pending_state()->signal_pending() below
