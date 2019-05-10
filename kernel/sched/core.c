@@ -3429,9 +3429,9 @@ static void __sched notrace __schedule(bool preempt)
 	rcu_note_context_switch(preempt);
 	
 	/*
-	 * JC Sched info logging
+	 * JC Sched info logging - deprecated
 	 */
-	printk(KERN_DEBUG "JC sched: %d, %d, %lld, %d, %d, %lld<<<", cpu, rq->nr_running, rq->nr_switches, prev->pid, prev->prio, prev->start_time);
+	// printk(KERN_DEBUG "JC sched: %d, %d, %lld, %d, %d, %lld<<<", cpu, rq->nr_running, rq->nr_switches, prev->pid, prev->prio, prev->start_time);
 	
 	/*	
 	 * Make sure that signal_pending_state()->signal_pending() below
@@ -3480,6 +3480,13 @@ static void __sched notrace __schedule(bool preempt)
 	next = pick_next_task(rq, prev, &rf);
 	clear_tsk_need_resched(prev);
 	clear_preempt_need_resched();
+
+	/*
+	 * JC Sched info logging
+	 */
+	if (cpu == 0) {
+        printk(KERN_DEBUG "JC: %u, %lu, %u, %lu, %llu, %llu, %d, %d, %d, %d, %d, %lu, %llu, %llu, %llu, %d, %d, %d, %lu, %llu, %llu, %llu <<<", rq->nr_running, rq->load.weight, rq->cfs_rq.nr_running, rq->cfs_rq.load.weight, rq->cfs_rq.exec_clock, rq->cfs_rq.min_vruntime, prev->pid, next->pid, prev->prio, prev->static_prio, prev->normal_prio, prev->se.load.weight, prev->se.vruntime, prev->se.sum_exec_runtime, prev->se.prev_sum_exec_runtime, next->prio, next->static_prio, next->normal_prio, next->se.load.weight, next->se.vruntime, next->se.sum_exec_runtime, next->se.prev_sum_exec_runtime);
+    }
 
 	if (likely(prev != next)) {
 		rq->nr_switches++;
