@@ -3485,7 +3485,7 @@ static void __sched notrace __schedule(bool preempt)
 	 * JC Sched info logging
 	 */
 	if (cpu == 0) {
-        printk(KERN_DEBUG "JC: %u, %lu, %u, %lu, %llu, %llu, %d, %d, %d, %d, %d, %lu, %llu, %llu, %llu, %d, %d, %d, %lu, %llu, %llu, %llu <<<", rq->nr_running, rq->load.weight, rq->cfs_rq.nr_running, rq->cfs_rq.load.weight, rq->cfs_rq.exec_clock, rq->cfs_rq.min_vruntime, prev->pid, next->pid, prev->prio, prev->static_prio, prev->normal_prio, prev->se.load.weight, prev->se.vruntime, prev->se.sum_exec_runtime, prev->se.prev_sum_exec_runtime, next->prio, next->static_prio, next->normal_prio, next->se.load.weight, next->se.vruntime, next->se.sum_exec_runtime, next->se.prev_sum_exec_runtime);
+        printk(KERN_DEBUG "JC: %u, %lu, %u, %lu, %llu, %llu, %d, %d, %d, %d, %d, %lu, %llu, %llu, %llu, %d, %d, %d, %lu, %llu, %llu, %llu <<<", rq->nr_running, rq->load.weight, rq->cfs.nr_running, rq->cfs.load.weight, rq->cfs.exec_clock, rq->cfs.min_vruntime, prev->pid, next->pid, prev->prio, prev->static_prio, prev->normal_prio, prev->se.load.weight, prev->se.vruntime, prev->se.sum_exec_runtime, prev->se.prev_sum_exec_runtime, next->prio, next->static_prio, next->normal_prio, next->se.load.weight, next->se.vruntime, next->se.sum_exec_runtime, next->se.prev_sum_exec_runtime);
     }
 
 	if (likely(prev != next)) {
