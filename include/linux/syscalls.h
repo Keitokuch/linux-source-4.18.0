@@ -614,6 +614,9 @@ asmlinkage long sys_sched_get_priority_min(int policy);
 asmlinkage long sys_sched_rr_get_interval(pid_t pid,
 					struct timespec __user *interval);
 
+/* kernel/sched/jc_logging.c */
+asmlinkage long sys_jc_sched(int start);
+
 /* kernel/signal.c */
 asmlinkage long sys_restart_syscall(void);
 asmlinkage long sys_kill(pid_t pid, int sig);
@@ -1109,6 +1112,9 @@ asmlinkage long sys_mmap_pgoff(unsigned long addr, unsigned long len,
 			unsigned long fd, unsigned long pgoff);
 asmlinkage long sys_old_mmap(struct mmap_arg_struct __user *arg);
 
+
+/* JC Sched logging */ 
+asmlinkage long sys_jc_sched(int start);
 
 /*
  * Not a real system call, but a placeholder for syscalls which are
