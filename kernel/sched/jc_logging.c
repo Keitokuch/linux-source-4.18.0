@@ -2,7 +2,7 @@
 #include <linux/syscalls.h>
 
 int jc_is_logging = 0;
-EXPORT_SYMBOL(jc_js_logging);
+EXPORT_SYMBOL(jc_is_logging);
 
 SYSCALL_DEFINE1(jc_sched, int, start)
 {
