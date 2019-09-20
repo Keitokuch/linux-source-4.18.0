@@ -17,6 +17,9 @@
 #include "../workqueue_internal.h"
 #include "../smpboot.h"
 
+// JC 
+#include <linux/ktime.h>
+
 #define CREATE_TRACE_POINTS
 #include <trace/events/sched.h>
 
@@ -3428,11 +3431,6 @@ static void __sched notrace __schedule(bool preempt)
 	local_irq_disable();
 	rcu_note_context_switch(preempt);
 	
-	/*
-	 * JC Sched info logging - deprecated
-	 */
-	// printk(KERN_DEBUG "JC sched: %d, %d, %lld, %d, %d, %lld<<<", cpu, rq->nr_running, rq->nr_switches, prev->pid, prev->prio, prev->start_time);
-	
 	/*	
 	 * Make sure that signal_pending_state()->signal_pending() below
 	 * can't be reordered with __set_current_state(TASK_INTERRUPTIBLE)
@@ -3484,23 +3482,48 @@ static void __sched notrace __schedule(bool preempt)
 	/*
 	 * JC Sched info logging
 	 */
-	if (jc_is_logging) {
-		if (cpu == 0) {
-        	printk(KERN_DEBUG "JC: %u, %lu, %u, %lu, "
-        		"%llu, %llu, %d, %d, %d, "
-        		"%d, %d, %lu, %llu, "
-        		"%llu, %llu, %d, "
-        		"%d, %d, %lu, %llu, "
-        		"%llu, %llu <<<", 
-        		rq->nr_running, rq->load.weight, rq->cfs.nr_running, rq->cfs.load.weight, 
-        		rq->cfs.exec_clock, rq->cfs.min_vruntime, prev->pid, next->pid, prev->prio, 
-        		prev->static_prio, prev->normal_prio, prev->se.load.weight, prev->se.vruntime, 
-        		prev->se.sum_exec_runtime, prev->se.prev_sum_exec_runtime, next->prio, 
-        		next->static_prio, next->normal_prio, next->se.load.weight, next->se.vruntime,
-        		 next->se.sum_exec_runtime, next->se.prev_sum_exec_runtime);
+    if (ic_is_logging) {
+        struct cfs_rq *cfs = &rq->cfs;
+        struct rb_node *left = rb_first_cached(&cfs_rq->tasks_timeline);
 
-		}
-	}
+        printk(KERN_DEBUG 
+                "%lld JC: cpu%d, %u, %u, %lu, %lu, %llu", 
+                ktime_get(), cpu, rq->nr_running, cfs->nr_running, rq->load.weight, cfs->load.weight, cfs->min_vruntime);
+
+        int task_idx = 0;
+        printk(KERN_DEBUG "%lld >>>TASK cpu%d has %u cfs tasks", ktime_get(), cpu, cfs->nr_running);
+        while (left) {
+            struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
+            struct task_struct *task = container_of(se, struct task_struct, se);
+            printk(KERN_DEBUG 
+                    "%lld p%d: %d, %llu, %llu, 
+                    %d, %lu, %llu", 
+                    ktime_get(), task_idx, task->pid, se->vruntime, se->sum_exec_runtime, 
+                    task->prio, se->load.weight, task->sched_info.pcount);
+            left = rb_next(left);
+            task_idx++;
+        }
+        printk(KERN_DEBUG "%lld <<<END cpu%d", ktime_get(), cpu);
+    }
+
+	// if (jc_is_logging) {
+	// 	if (cpu == 0) {
+    //     	printk(KERN_DEBUG "JC: %u, %lu, %u, %lu, "
+    //     		"%llu, %llu, %d, %d, %d, "
+    //     		"%d, %d, %lu, %llu, "
+    //     		"%llu, %llu, %d, "
+    //     		"%d, %d, %lu, %llu, "
+    //     		"%llu, %llu <<<", 
+    //     		rq->nr_running, rq->load.weight, rq->cfs.nr_running, rq->cfs.load.weight, 
+    //     		rq->cfs.exec_clock, rq->cfs.min_vruntime, prev->pid, next->pid, prev->prio, 
+    //     		prev->static_prio, prev->normal_prio, prev->se.load.weight, prev->se.vruntime, 
+    //     		prev->se.sum_exec_runtime, prev->se.prev_sum_exec_runtime, next->prio, 
+    //     		next->static_prio, next->normal_prio, next->se.load.weight, next->se.vruntime,
+    //     		 next->se.sum_exec_runtime, next->se.prev_sum_exec_runtime);
+
+	// 	}
+	// }
+
 	// if (cpu == 0) {
  //        printk(KERN_DEBUG "JC: %u, %lu, %u, %lu, %llu, %llu, %d, %d, %d, %d, %d, %lu, %llu, %llu, %llu, %d, %d, %d, %lu, %llu, %llu, %llu <<<", rq->nr_running, rq->load.weight, rq->cfs.nr_running, rq->cfs.load.weight, rq->cfs.exec_clock, rq->cfs.min_vruntime, prev->pid, next->pid, prev->prio, prev->static_prio, prev->normal_prio, prev->se.load.weight, prev->se.vruntime, prev->se.sum_exec_runtime, prev->se.prev_sum_exec_runtime, next->prio, next->static_prio, next->normal_prio, next->se.load.weight, next->se.vruntime, next->se.sum_exec_runtime, next->se.prev_sum_exec_runtime);
  //    }
