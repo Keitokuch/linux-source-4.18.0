@@ -3442,6 +3442,33 @@ static void __sched notrace __schedule(bool preempt)
 	rq_lock(rq, &rf);
 	smp_mb__after_spinlock();
 
+	/*
+	 * JC Sched info logging
+	 */
+    if (jc_is_logging) {
+        struct cfs_rq *cfs = &rq->cfs;
+        struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
+
+        printk(KERN_DEBUG 
+                "%lld >>> JC: cpu%d, %u, %u, %lu, %lu, %llu", 
+                ktime_get(), cpu, cfs->h_nr_running, rq->nr_running, cfs->load.weight, rq->load.weight, cfs->min_vruntime);
+
+        int task_idx = 0;
+        while (left) {
+            struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
+            struct task_struct *task = container_of(se, struct task_struct, se);
+            printk(KERN_DEBUG 
+                    "%lld p%d: %d, %llu, %llu, "
+                    "%d, %lu, %llu", 
+                    ktime_get(), task_idx, task->pid, se->vruntime, se->sum_exec_runtime, 
+                    task->prio, se->load.weight, task->sched_info.pcount);
+            left = rb_next(left);
+            task_idx++;
+        }
+        printk(KERN_DEBUG "%lld <<< JC: cpu%d", ktime_get(), cpu);
+    }
+
+
 	/* Promote REQ to ACT */
 	rq->clock_update_flags <<= 1;
 	update_rq_clock(rq);
@@ -3478,33 +3505,6 @@ static void __sched notrace __schedule(bool preempt)
 	next = pick_next_task(rq, prev, &rf);
 	clear_tsk_need_resched(prev);
 	clear_preempt_need_resched();
-
-	/*
-	 * JC Sched info logging
-	 */
-    if (ic_is_logging) {
-        struct cfs_rq *cfs = &rq->cfs;
-        struct rb_node *left = rb_first_cached(&cfs_rq->tasks_timeline);
-
-        printk(KERN_DEBUG 
-                "%lld JC: cpu%d, %u, %u, %lu, %lu, %llu", 
-                ktime_get(), cpu, rq->nr_running, cfs->nr_running, rq->load.weight, cfs->load.weight, cfs->min_vruntime);
-
-        int task_idx = 0;
-        printk(KERN_DEBUG "%lld >>>TASK cpu%d has %u cfs tasks", ktime_get(), cpu, cfs->nr_running);
-        while (left) {
-            struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
-            struct task_struct *task = container_of(se, struct task_struct, se);
-            printk(KERN_DEBUG 
-                    "%lld p%d: %d, %llu, %llu, 
-                    %d, %lu, %llu", 
-                    ktime_get(), task_idx, task->pid, se->vruntime, se->sum_exec_runtime, 
-                    task->prio, se->load.weight, task->sched_info.pcount);
-            left = rb_next(left);
-            task_idx++;
-        }
-        printk(KERN_DEBUG "%lld <<<END cpu%d", ktime_get(), cpu);
-    }
 
 	// if (jc_is_logging) {
 	// 	if (cpu == 0) {
