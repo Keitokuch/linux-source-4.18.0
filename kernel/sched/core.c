@@ -3450,22 +3450,21 @@ static void __sched notrace __schedule(bool preempt)
         struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
 
         printk(KERN_DEBUG 
-                "%lld >>> JC: cpu%d, %u, %u, %lu, %lu, %llu", 
+                "%lld RunQueue: %d, %u, %u, %lu, %lu, %llu", 
                 ktime_get(), cpu, cfs->h_nr_running, rq->nr_running, cfs->load.weight, rq->load.weight, cfs->min_vruntime);
 
         int task_idx = 0;
         while (left) {
             struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
             struct task_struct *task = container_of(se, struct task_struct, se);
-            printk(KERN_DEBUG 
-                    "%lld p%d: %d, %llu, %llu, "
-                    "%d, %lu, %llu", 
-                    ktime_get(), task_idx, task->pid, se->vruntime, se->sum_exec_runtime, 
-                    task->prio, se->load.weight, task->sched_info.pcount);
             left = rb_next(left);
+            printk(KERN_DEBUG 
+                    "%lld c%d p%d: %d, %d, %llu, %llu, "
+                    "%d, %lu, %llu", 
+                    ktime_get(), cpu, task_idx, task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
+                    task->prio, se->load.weight, task->sched_info.pcount);
             task_idx++;
         }
-        printk(KERN_DEBUG "%lld <<< JC: cpu%d", ktime_get(), cpu);
     }
 
 
