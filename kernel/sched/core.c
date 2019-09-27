@@ -3448,10 +3448,27 @@ static void __sched notrace __schedule(bool preempt)
     if (jc_is_logging) {
         struct cfs_rq *cfs = &rq->cfs;
         struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
+        struct task_struct *idle = rq->idle;
 
         printk(KERN_DEBUG 
-                "%lld RunQueue: %d, %u, %u, %lu, %lu, %llu", 
-                ktime_get(), cpu, cfs->h_nr_running, rq->nr_running, cfs->load.weight, rq->load.weight, cfs->min_vruntime);
+                "%lld c%d rq: %d, %u, %lu, %llu, %lu, %lu, %lu, %lu, %lu", 
+                ktime_get(), cpu, rq->nr_running, rq->load.weight, cfs->min_vruntime, rq->cpu_load[0], rq->cpu_load[1], rq->cpu_load[2], rq->cpu_load[3], rq->cpu_load[4]);
+        printk(KERN_DEBUG 
+                "%lld c%d curr: %u, %u, %llu, $llu, "
+                "%d, %lu, "
+                "%u, %d",
+                ktime_get(), cpu, prev->pid, prev->tgid, prev->se->vruntime, prev->se->sum_exec_runtime, 
+                prev->prio, prev->se.load.weight,
+                prev->policy, prev->nr_cpus_allowed 
+                );
+        printk(KERN_DEBUG 
+                "%lld c%d idle: %u, %u, %llu, $llu, "
+                "%d, %lu, "
+                "%u, %d",
+                ktime_get(), cpu, idle->pid, idle->tgid, idle->se->vruntime, idle->se->sum_exec_runtime, 
+                idle->prio, idle->se.load.weight,
+                idle->policy, idle->nr_cpus_allowed 
+                );
 
         int task_idx = 0;
         while (left) {
@@ -3459,10 +3476,13 @@ static void __sched notrace __schedule(bool preempt)
             struct task_struct *task = container_of(se, struct task_struct, se);
             left = rb_next(left);
             printk(KERN_DEBUG 
-                    "%lld c%d p%d: %d, %d, %llu, %llu, "
-                    "%d, %lu, %llu", 
+                    "%lld c%d p%d: %u, %u, %llu, %llu, "
+                    "%d, %lu, " 
+                    "%u, %d"
                     ktime_get(), cpu, task_idx, task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
-                    task->prio, se->load.weight, task->sched_info.pcount);
+                    task->prio, se->load.weight,
+                    task->policy, task->nr_cpus_allowed
+                    );
             task_idx++;
         }
     }
