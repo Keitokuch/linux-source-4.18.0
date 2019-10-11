@@ -3445,28 +3445,38 @@ static void __sched notrace __schedule(bool preempt)
 	/*
 	 * JC Sched info logging
 	 */
+    
     if (jc_is_logging) {
         struct cfs_rq *cfs = &rq->cfs;
         struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
         struct task_struct *idle = rq->idle;
-        int task_idx = 0;
+        int task_idx = 1;
 
         printk(KERN_DEBUG
-                "%lld c%d rq: %d, %lu, %llu, %lu, %lu, %lu, %lu, %lu", 
-                ktime_get(), cpu, rq->nr_running, rq->load.weight, cfs->min_vruntime, rq->cpu_load[0], rq->cpu_load[1], rq->cpu_load[2], rq->cpu_load[3], rq->cpu_load[4]);
+                "%lld c%d rq: "
+                "%d, %lu, %llu, "
+                "%lu, %lu, %lu, %lu, %lu", 
+                ktime_get(), cpu, 
+                rq->nr_running, rq->load.weight, cfs->min_vruntime, 
+                rq->cpu_load[0], rq->cpu_load[1], rq->cpu_load[2], rq->cpu_load[3], rq->cpu_load[4]
+                );
         printk(KERN_DEBUG
-                "%lld c%d curr: %u, %u, %llu, %llu, "
+                "%lld c%d curr: "
+                "%u, %u, %llu, %llu, "
                 "%d, %lu, "
                 "%u, %d",
-                ktime_get(), cpu, prev->pid, prev->tgid, prev->se.vruntime, prev->se.sum_exec_runtime, 
+                ktime_get(), cpu, 
+                prev->pid, prev->tgid, prev->se.vruntime, prev->se.sum_exec_runtime, 
                 prev->prio, prev->se.load.weight,
                 prev->policy, prev->nr_cpus_allowed 
                 );
         printk(KERN_DEBUG
-                "%lld c%d idle: %u, %u, %llu, %llu, "
+                "%lld c%d idle: "
+                "%u, %u, %llu, %llu, "
                 "%d, %lu, "
                 "%u, %d",
-                ktime_get(), cpu, idle->pid, idle->tgid, idle->se.vruntime, idle->se.sum_exec_runtime, 
+                ktime_get(), cpu, 
+                idle->pid, idle->tgid, idle->se.vruntime, idle->se.sum_exec_runtime, 
                 idle->prio, idle->se.load.weight,
                 idle->policy, idle->nr_cpus_allowed 
                 );
@@ -3474,18 +3484,67 @@ static void __sched notrace __schedule(bool preempt)
         while (left) {
             struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
             struct task_struct *task = container_of(se, struct task_struct, se);
-            left = rb_next(left);
+            // struct task_struct *task = task_of(se);
             printk(KERN_DEBUG 
-                    "%lld c%d p%d: %u, %u, %llu, %llu, "
+                    "%lld c%d p%d/%d: "
+                    "%u, %u, %llu, %llu, "
                     "%d, %lu, " 
                     "%u, %d",
-                    ktime_get(), cpu, task_idx, task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
+                    ktime_get(), cpu, task_idx, cfs->nr_running,
+                    task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
                     task->prio, se->load.weight,
                     task->policy, task->nr_cpus_allowed
                     );
             task_idx++;
+            left = rb_next(left);
         }
     }
+    
+    
+    /* 
+     * ATTEMPT 2
+     * JC SCHED
+     */ 
+    /*
+    if (jc_is_logging) {
+        struct cfs_rq *cfs = &rq->cfs;
+        struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
+        struct task_struct *idle = rq->idle;
+        int task_idx = 0;
+
+        printk(KERN_DEBUG
+                "%lld c%d rq: "
+                "%p, cfs: %p, %d, %d\n", 
+                ktime_get(), cpu, 
+                (void*)rq, (void*)cfs, rq->nr_running, cfs->nr_running);
+        printk(KERN_DEBUG
+                "%lld c%d curr: "
+                "%u, %u, %u, %d, "
+                "%s\n", 
+                ktime_get(), cpu, 
+                prev->tgid, prev->pid, prev->policy, prev->prio, 
+                prev->comm
+                );
+
+        while (left) {
+            struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
+            struct task_struct *task = container_of(se, struct task_struct, se);
+            // struct task_struct *task = task_of(se);
+            printk(KERN_DEBUG 
+                    "%lld c%d p%d: "
+                    "%u, %u, "
+                    "%d, %u, " 
+                    "%s\n",
+                    ktime_get(), cpu, task_idx, 
+                    task->tgid, task->pid,
+                    task->prio, task->policy,
+                    task->comm
+                    );
+            task_idx++;
+            left = rb_next(left);
+        }
+    }
+    */
 
 
 	/* Promote REQ to ACT */
