@@ -3442,63 +3442,6 @@ static void __sched notrace __schedule(bool preempt)
 	rq_lock(rq, &rf);
 	smp_mb__after_spinlock();
 
-	/*
-	 * JC Sched info logging
-	 */
-    
-    if (jc_is_logging) {
-        struct cfs_rq *cfs = &rq->cfs;
-        struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
-        struct task_struct *idle = rq->idle;
-        int task_idx = 1;
-
-        printk(KERN_DEBUG
-                "%lld c%d rq: "
-                "%d, %lu, %llu, "
-                "%lu, %lu, %lu, %lu, %lu", 
-                ktime_get(), cpu, 
-                rq->nr_running, rq->load.weight, cfs->min_vruntime, 
-                rq->cpu_load[0], rq->cpu_load[1], rq->cpu_load[2], rq->cpu_load[3], rq->cpu_load[4]
-                );
-        printk(KERN_DEBUG
-                "%lld c%d curr: "
-                "%u, %u, %llu, %llu, "
-                "%d, %lu, "
-                "%u, %d",
-                ktime_get(), cpu, 
-                prev->pid, prev->tgid, prev->se.vruntime, prev->se.sum_exec_runtime, 
-                prev->prio, prev->se.load.weight,
-                prev->policy, prev->nr_cpus_allowed 
-                );
-        printk(KERN_DEBUG
-                "%lld c%d idle: "
-                "%u, %u, %llu, %llu, "
-                "%d, %lu, "
-                "%u, %d",
-                ktime_get(), cpu, 
-                idle->pid, idle->tgid, idle->se.vruntime, idle->se.sum_exec_runtime, 
-                idle->prio, idle->se.load.weight,
-                idle->policy, idle->nr_cpus_allowed 
-                );
-
-        while (left) {
-            struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
-            struct task_struct *task = container_of(se, struct task_struct, se);
-            // struct task_struct *task = task_of(se);
-            printk(KERN_DEBUG 
-                    "%lld c%d p%d/%d: "
-                    "%u, %u, %llu, %llu, "
-                    "%d, %lu, " 
-                    "%u, %d",
-                    ktime_get(), cpu, task_idx, cfs->nr_running,
-                    task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
-                    task->prio, se->load.weight,
-                    task->policy, task->nr_cpus_allowed
-                    );
-            task_idx++;
-            left = rb_next(left);
-        }
-    }
     
     
     /* 
@@ -3584,31 +3527,64 @@ static void __sched notrace __schedule(bool preempt)
 	clear_tsk_need_resched(prev);
 	clear_preempt_need_resched();
 
-	// if (jc_is_logging) {
-	// 	if (cpu == 0) {
-    //     	printk(KERN_DEBUG "JC: %u, %lu, %u, %lu, "
-    //     		"%llu, %llu, %d, %d, %d, "
-    //     		"%d, %d, %lu, %llu, "
-    //     		"%llu, %llu, %d, "
-    //     		"%d, %d, %lu, %llu, "
-    //     		"%llu, %llu <<<", 
-    //     		rq->nr_running, rq->load.weight, rq->cfs.nr_running, rq->cfs.load.weight, 
-    //     		rq->cfs.exec_clock, rq->cfs.min_vruntime, prev->pid, next->pid, prev->prio, 
-    //     		prev->static_prio, prev->normal_prio, prev->se.load.weight, prev->se.vruntime, 
-    //     		prev->se.sum_exec_runtime, prev->se.prev_sum_exec_runtime, next->prio, 
-    //     		next->static_prio, next->normal_prio, next->se.load.weight, next->se.vruntime,
-    //     		 next->se.sum_exec_runtime, next->se.prev_sum_exec_runtime);
+	/*
+	 * JC Sched info logging
+	 */
+    if (jc_is_logging) {
+        struct cfs_rq *cfs = &rq->cfs;
+        struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
+        struct task_struct *idle = rq->idle;
+        int task_idx = 1;
 
-	// 	}
-	// }
+        printk(KERN_DEBUG
+                "%lld c%d rq: "
+                "%d, %lu, %llu, "
+                "%lu, %lu, %lu, %lu, %lu", 
+                ktime_get(), cpu, 
+                rq->nr_running, rq->load.weight, cfs->min_vruntime, 
+                rq->cpu_load[0], rq->cpu_load[1], rq->cpu_load[2], rq->cpu_load[3], rq->cpu_load[4]
+                );
+        printk(KERN_DEBUG
+                "%lld c%d prev: "
+                "%u, %u, %llu, %llu, "
+                "%d, %lu, "
+                "%u, %d",
+                ktime_get(), cpu, 
+                prev->pid, prev->tgid, prev->se.vruntime, prev->se.sum_exec_runtime, 
+                prev->prio, prev->se.load.weight,
+                prev->policy, prev->nr_cpus_allowed 
+                );
+        printk(KERN_DEBUG
+                "%lld c%d next: "
+                "%u, %u, %llu, %llu, "
+                "%d, %lu, "
+                "%u, %d",
+                ktime_get(), cpu, 
+                next->pid, next->tgid, next->se.vruntime, next->se.sum_exec_runtime, 
+                next->prio, next->se.load.weight,
+                next->policy, next->nr_cpus_allowed 
+                );
 
-	// if (cpu == 0) {
- //        printk(KERN_DEBUG "JC: %u, %lu, %u, %lu, %llu, %llu, %d, %d, %d, %d, %d, %lu, %llu, %llu, %llu, %d, %d, %d, %lu, %llu, %llu, %llu <<<", rq->nr_running, rq->load.weight, rq->cfs.nr_running, rq->cfs.load.weight, rq->cfs.exec_clock, rq->cfs.min_vruntime, prev->pid, next->pid, prev->prio, prev->static_prio, prev->normal_prio, prev->se.load.weight, prev->se.vruntime, prev->se.sum_exec_runtime, prev->se.prev_sum_exec_runtime, next->prio, next->static_prio, next->normal_prio, next->se.load.weight, next->se.vruntime, next->se.sum_exec_runtime, next->se.prev_sum_exec_runtime);
- //    }
-	// if (jc_is_logging)
-	// 	printk(KERN_DEBUG "yes");
-	// else 
-	// 	printk(KERN_DEBUG "no");
+        while (left) {
+            struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
+            struct task_struct *task = container_of(se, struct task_struct, se);
+            // struct task_struct *task = task_of(se);
+            printk(KERN_DEBUG 
+                    "%lld c%d p%d/%d: "
+                    "%u, %u, %llu, %llu, "
+                    "%d, %lu, " 
+                    "%u, %d",
+                    ktime_get(), cpu, task_idx, cfs->nr_running,
+                    task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
+                    task->prio, se->load.weight,
+                    task->policy, task->nr_cpus_allowed
+                    );
+            task_idx++;
+            left = rb_next(left);
+        }
+    }
+    /*  JC SCHED END */
+
 
 	if (likely(prev != next)) {
 		rq->nr_switches++;
