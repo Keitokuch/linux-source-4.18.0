@@ -3548,11 +3548,11 @@ static void __sched notrace __schedule(bool preempt)
                 "%lld c%d prev: "
                 "%u, %u, %llu, %llu, "
                 "%d, %lu, "
-                "%u, %d",
+                "%u, %d, %lu",
                 ktime_get(), cpu, 
                 prev->pid, prev->tgid, prev->se.vruntime, prev->se.sum_exec_runtime, 
                 prev->prio, prev->se.load.weight,
-                prev->policy, prev->nr_cpus_allowed 
+                prev->policy, prev->nr_cpus_allowed, *(prev->cpus_allowed.bits)
                 );
         printk(KERN_DEBUG
                 "%lld c%d next: "
@@ -3562,7 +3562,7 @@ static void __sched notrace __schedule(bool preempt)
                 ktime_get(), cpu, 
                 next->pid, next->tgid, next->se.vruntime, next->se.sum_exec_runtime, 
                 next->prio, next->se.load.weight,
-                next->policy, next->nr_cpus_allowed 
+                next->policy, next->nr_cpus_allowed, *(next->cpus_allowed.bits) 
                 );
 
         while (left) {
@@ -3577,7 +3577,7 @@ static void __sched notrace __schedule(bool preempt)
                     ktime_get(), cpu, task_idx, cfs->nr_running,
                     task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
                     task->prio, se->load.weight,
-                    task->policy, task->nr_cpus_allowed
+                    task->policy, task->nr_cpus_allowed, *(task->cpus_allowed.bits)
                     );
             task_idx++;
             left = rb_next(left);
