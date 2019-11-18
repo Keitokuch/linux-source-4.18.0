@@ -3533,7 +3533,7 @@ static void __sched notrace __schedule(bool preempt)
     if (jc_is_logging) {
         struct cfs_rq *cfs = &rq->cfs;
         struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
-        struct task_struct *idle = rq->idle;
+        // struct task_struct *idle = rq->idle;
         int task_idx = 1;
 
         printk(KERN_DEBUG
@@ -3564,7 +3564,7 @@ static void __sched notrace __schedule(bool preempt)
                 next->prio, next->se.load.weight,
                 next->policy, next->nr_cpus_allowed, next->cpus_allowed.bits[0] 
                 );
-
+        /*
         while (left) {
             struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
             struct task_struct *task = container_of(se, struct task_struct, se);
@@ -3581,6 +3581,28 @@ static void __sched notrace __schedule(bool preempt)
                     );
             task_idx++;
             left = rb_next(left);
+        }
+        */
+        {
+            struct list_head *head, *pos;
+            head = &rq->cfs_tasks;
+            list_for_each(pos, head){
+                struct task_struct *task;
+                struct sched_entity se;
+                task = list_entry(pos, struct task_struct, se.group_node);
+                se = task->se;
+                printk(KERN_DEBUG 
+                        "%lld test c%d p%d/%d: "
+                        "%u, %u, %llu, %llu, "
+                        "%d, %lu, " 
+                        "%u, %d, %lu",
+                        ktime_get(), cpu, task_idx, cfs->h_nr_running,
+                        task->pid, task->tgid, se.vruntime, se.sum_exec_runtime, 
+                        task->prio, se.load.weight,
+                        task->policy, task->nr_cpus_allowed, task->cpus_allowed.bits[0]
+                      );
+                task_idx++;
+            }
         }
     }
     /*  JC SCHED END */

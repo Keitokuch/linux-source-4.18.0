@@ -8925,7 +8925,6 @@ more_balance:
             int src_cpu = env.src_cpu;          // busiest->cpu
             int dst_cpu = env.dst_cpu;          // this_cpu
             int is_src;
-
             
             printk(KERN_DEBUG
                     "%lld src c%d rq: "
@@ -8943,6 +8942,32 @@ more_balance:
                     dst_rq->nr_running, dst_rq->load.weight, dst_rq->cfs.min_vruntime,
                     dst_rq->cpu_load[0], dst_rq->cpu_load[1], dst_rq->cpu_load[2], dst_rq->cpu_load[3], dst_rq->cpu_load[4]
                   );
+
+        {
+            struct list_head *head, *pos;
+            struct rq *rq = dst_rq;
+            struct cfs_rq *cfs = &rq->cfs;
+            int cpu = rq->cpu;
+            int pc = 1;
+            head = &rq->cfs_tasks;
+            list_for_each(pos, head){
+                struct task_struct *task;
+                struct sched_entity se;
+                task = list_entry(pos, struct task_struct, se.group_node);
+                se = task->se;
+                printk(KERN_DEBUG 
+                        "%lld lbtest c%d p%d/%d: "
+                        "%u, %u, %llu, %llu, "
+                        "%d, %lu, " 
+                        "%u, %d, %lu",
+                        ktime_get(), cpu, pc, cfs->h_nr_running,
+                        task->pid, task->tgid, se.vruntime, se.sum_exec_runtime, 
+                        task->prio, se.load.weight,
+                        task->policy, task->nr_cpus_allowed, task->cpus_allowed.bits[0]
+                      );
+                pc++;
+            }
+        }
             /*
             for (is_src = 0; is_src < 2; is_src++) {
                 struct list_head *head, *pos;
