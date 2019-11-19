@@ -3442,54 +3442,6 @@ static void __sched notrace __schedule(bool preempt)
 	rq_lock(rq, &rf);
 	smp_mb__after_spinlock();
 
-    
-    
-    /* 
-     * ATTEMPT 2
-     * JC SCHED
-     */ 
-    /*
-    if (jc_is_logging) {
-        struct cfs_rq *cfs = &rq->cfs;
-        struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
-        struct task_struct *idle = rq->idle;
-        int task_idx = 0;
-
-        printk(KERN_DEBUG
-                "%lld c%d rq: "
-                "%p, cfs: %p, %d, %d\n", 
-                ktime_get(), cpu, 
-                (void*)rq, (void*)cfs, rq->nr_running, cfs->nr_running);
-        printk(KERN_DEBUG
-                "%lld c%d curr: "
-                "%u, %u, %u, %d, "
-                "%s\n", 
-                ktime_get(), cpu, 
-                prev->tgid, prev->pid, prev->policy, prev->prio, 
-                prev->comm
-                );
-
-        while (left) {
-            struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
-            struct task_struct *task = container_of(se, struct task_struct, se);
-            // struct task_struct *task = task_of(se);
-            printk(KERN_DEBUG 
-                    "%lld c%d p%d: "
-                    "%u, %u, "
-                    "%d, %u, " 
-                    "%s\n",
-                    ktime_get(), cpu, task_idx, 
-                    task->tgid, task->pid,
-                    task->prio, task->policy,
-                    task->comm
-                    );
-            task_idx++;
-            left = rb_next(left);
-        }
-    }
-    */
-
-
 	/* Promote REQ to ACT */
 	rq->clock_update_flags <<= 1;
 	update_rq_clock(rq);
@@ -3528,11 +3480,11 @@ static void __sched notrace __schedule(bool preempt)
 	clear_preempt_need_resched();
 
 	/*
-	 * JC Sched info logging
+	 * JC rq dump after context switch
 	 */
     if (jc_is_logging) {
         struct cfs_rq *cfs = &rq->cfs;
-        struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
+        // struct rb_node *left = rb_first_cached(&cfs->tasks_timeline);
         // struct task_struct *idle = rq->idle;
         int task_idx = 1;
 
@@ -3564,25 +3516,6 @@ static void __sched notrace __schedule(bool preempt)
                 next->prio, next->se.load.weight,
                 next->policy, next->nr_cpus_allowed, next->cpus_allowed.bits[0] 
                 );
-        /*
-        while (left) {
-            struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
-            struct task_struct *task = container_of(se, struct task_struct, se);
-            // struct task_struct *task = task_of(se);
-            printk(KERN_DEBUG 
-                    "%lld c%d p%d/%d: "
-                    "%u, %u, %llu, %llu, "
-                    "%d, %lu, " 
-                    "%u, %d, %lu",
-                    ktime_get(), cpu, task_idx, cfs->nr_running,
-                    task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
-                    task->prio, se->load.weight,
-                    task->policy, task->nr_cpus_allowed, task->cpus_allowed.bits[0]
-                    );
-            task_idx++;
-            left = rb_next(left);
-        }
-        */
         {
             struct list_head *head, *pos;
             head = &rq->cfs_tasks;
@@ -3605,6 +3538,25 @@ static void __sched notrace __schedule(bool preempt)
             }
         }
     }
+        /*
+        while (left) {
+            struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);
+            struct task_struct *task = container_of(se, struct task_struct, se);
+            // struct task_struct *task = task_of(se);
+            printk(KERN_DEBUG 
+                    "%lld c%d p%d/%d: "
+                    "%u, %u, %llu, %llu, "
+                    "%d, %lu, " 
+                    "%u, %d, %lu",
+                    ktime_get(), cpu, task_idx, cfs->nr_running,
+                    task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
+                    task->prio, se->load.weight,
+                    task->policy, task->nr_cpus_allowed, task->cpus_allowed.bits[0]
+                    );
+            task_idx++;
+            left = rb_next(left);
+        }
+        */
     /*  JC SCHED END */
 
 
