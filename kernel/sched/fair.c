@@ -8907,14 +8907,14 @@ more_balance:
          * dump src_rq after detaching from it
          * when we still have the lock
          */
-        if (jc_is_logging) {
+        if (jc_is_logging && cur_ld_moved) {
             struct rq *rq = env.src_rq;     // busiest
             int cpu = env.src_cpu;          // busiest->cpu
             struct list_head *head, *pos;
             struct cfs_rq *cfs = &rq->cfs;
             int pc;
             printk(KERN_DEBUG
-                    "%lld lbsrc c%d rq: "
+                    "%lld src c%d rq: "
                     "%d, %lu, %llu, "
                     "%lu, %lu, %lu, %lu, %lu", 
                     ktime_get(), cpu, 
@@ -8962,7 +8962,7 @@ more_balance:
          * JC rq dump after balance attach
          * dump dst_rq(this_rq) after attaching to it
          */
-        if (jc_is_logging) {
+        if (jc_is_logging && cur_ld_moved) {
             struct rq *rq = env.dst_rq;     // this_rq
             int cpu = env.dst_cpu;          // this_cpu
             struct list_head *head, *pos;
