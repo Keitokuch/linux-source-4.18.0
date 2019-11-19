@@ -8901,6 +8901,47 @@ more_balance:
 		 */
 		cur_ld_moved = detach_tasks(&env);
 
+
+        /*
+         * JC rq Dump after balance detach
+         * dump src_rq after detaching from it
+         * when we still have the lock
+         */
+        if (jc_is_logging) {
+            struct rq *rq = env.src_rq;     // busiest
+            int cpu = env.src_cpu;          // busiest->cpu
+            struct list_head *head, *pos;
+            struct cfs_rq *cfs = &rq->cfs;
+            int pc;
+            printk(KERN_DEBUG
+                    "%lld lbsrc c%d rq: "
+                    "%d, %lu, %llu, "
+                    "%lu, %lu, %lu, %lu, %lu", 
+                    ktime_get(), cpu, 
+                    rq->nr_running, rq->load.weight, rq->cfs.min_vruntime,
+                    rq->cpu_load[0], rq->cpu_load[1], rq->cpu_load[2], rq->cpu_load[3], rq->cpu_load[4]
+                  );
+            pc = 1;
+            head = &rq->cfs_tasks;
+            list_for_each(pos, head){
+                struct task_struct *task;
+                struct sched_entity se;
+                task = list_entry(pos, struct task_struct, se.group_node);
+                se = task->se;
+                printk(KERN_DEBUG 
+                        "%lld src c%d p%d/%d: "
+                        "%u, %u, %llu, %llu, "
+                        "%d, %lu, " 
+                        "%u, %d, %lu",
+                        ktime_get(), cpu, pc, cfs->h_nr_running,
+                        task->pid, task->tgid, se.vruntime, se.sum_exec_runtime, 
+                        task->prio, se.load.weight,
+                        task->policy, task->nr_cpus_allowed, task->cpus_allowed.bits[0]
+                      );
+                pc++;
+            }
+        }
+
 		/*
 		 * We've detached some tasks from busiest_rq. Every
 		 * task is masked "TASK_ON_RQ_MIGRATING", so we can safely
@@ -8925,7 +8966,7 @@ more_balance:
             int src_cpu = env.src_cpu;          // busiest->cpu
             int dst_cpu = env.dst_cpu;          // this_cpu
             int is_src;
-            
+
             printk(KERN_DEBUG
                     "%lld src c%d rq: "
                     "%d, %lu, %llu, "
@@ -8942,64 +8983,65 @@ more_balance:
                     dst_rq->nr_running, dst_rq->load.weight, dst_rq->cfs.min_vruntime,
                     dst_rq->cpu_load[0], dst_rq->cpu_load[1], dst_rq->cpu_load[2], dst_rq->cpu_load[3], dst_rq->cpu_load[4]
                   );
-
-        {
-            struct list_head *head, *pos;
-            struct rq *rq = dst_rq;
-            struct cfs_rq *cfs = &rq->cfs;
-            int cpu = rq->cpu;
-            int pc = 1;
-            head = &rq->cfs_tasks;
-            list_for_each(pos, head){
-                struct task_struct *task;
-                struct sched_entity se;
-                task = list_entry(pos, struct task_struct, se.group_node);
-                se = task->se;
-                printk(KERN_DEBUG 
-                        "%lld lbtest c%d p%d/%d: "
-                        "%u, %u, %llu, %llu, "
-                        "%d, %lu, " 
-                        "%u, %d, %lu",
-                        ktime_get(), cpu, pc, cfs->h_nr_running,
-                        task->pid, task->tgid, se.vruntime, se.sum_exec_runtime, 
-                        task->prio, se.load.weight,
-                        task->policy, task->nr_cpus_allowed, task->cpus_allowed.bits[0]
-                      );
-                pc++;
-            }
-        }
-            /*
-            for (is_src = 0; is_src < 2; is_src++) {
+            {
                 struct list_head *head, *pos;
-                struct rq *rq = is_src ? src_rq : dst_rq;
+                struct rq *rq = dst_rq;
+                // struct rq *rq = is_src ? src_rq : dst_rq;
                 struct cfs_rq *cfs = &rq->cfs;
-                char *name = is_src ? "src" : "dst";
-                int pc = 0;
-                int nr_tasks = cfs->h_nr_running;
+                // char *name = is_src ? "src" : "dst";
                 int cpu = rq->cpu;
-
+                int pc = 1;
                 head = &rq->cfs_tasks;
-                list_for_each(pos, head) {
+                list_for_each(pos, head){
                     struct task_struct *task;
-                    struct sched_entity *se;
+                    struct sched_entity se;
                     task = list_entry(pos, struct task_struct, se.group_node);
-                    se = list_entry(pos, struct sched_entity, group_node);
-
-                    pc++;
+                    se = task->se;
                     printk(KERN_DEBUG 
-                            "%lld %s c%d p%d/%d: "
+                            "%lld dst c%d p%d/%d: "
                             "%u, %u, %llu, %llu, "
                             "%d, %lu, " 
                             "%u, %d, %lu",
-                            ktime_get(), name, cpu, pc, nr_tasks,
-                            task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
-                            task->prio, se->load.weight,
+                            ktime_get(), cpu, pc, cfs->h_nr_running,
+                            task->pid, task->tgid, se.vruntime, se.sum_exec_runtime, 
+                            task->prio, se.load.weight,
                             task->policy, task->nr_cpus_allowed, task->cpus_allowed.bits[0]
                           );
-
+                    pc++;
                 }
             }
-            */
+            /*
+               for (is_src = 0; is_src < 2; is_src++) {
+               struct list_head *head, *pos;
+               struct rq *rq = is_src ? src_rq : dst_rq;
+               struct cfs_rq *cfs = &rq->cfs;
+               char *name = is_src ? "src" : "dst";
+               int pc = 0;
+               int nr_tasks = cfs->h_nr_running;
+               int cpu = rq->cpu;
+
+               head = &rq->cfs_tasks;
+               list_for_each(pos, head) {
+               struct task_struct *task;
+               struct sched_entity *se;
+               task = list_entry(pos, struct task_struct, se.group_node);
+               se = list_entry(pos, struct sched_entity, group_node);
+
+               pc++;
+               printk(KERN_DEBUG 
+               "%lld %s c%d p%d/%d: "
+               "%u, %u, %llu, %llu, "
+               "%d, %lu, " 
+               "%u, %d, %lu",
+               ktime_get(), name, cpu, pc, nr_tasks,
+               task->pid, task->tgid, se->vruntime, se->sum_exec_runtime, 
+               task->prio, se->load.weight,
+               task->policy, task->nr_cpus_allowed, task->cpus_allowed.bits[0]
+               );
+
+               }
+               }
+               */
         }
 
 		local_irq_restore(rf.flags);

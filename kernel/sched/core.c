@@ -3592,7 +3592,7 @@ static void __sched notrace __schedule(bool preempt)
                 task = list_entry(pos, struct task_struct, se.group_node);
                 se = task->se;
                 printk(KERN_DEBUG 
-                        "%lld test c%d p%d/%d: "
+                        "%lld c%d p%d/%d: "
                         "%u, %u, %llu, %llu, "
                         "%d, %lu, " 
                         "%u, %d, %lu",
