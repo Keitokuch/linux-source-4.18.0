@@ -8902,6 +8902,7 @@ more_balance:
 		cur_ld_moved = detach_tasks(&env);
 
 
+#ifdef JC_LB_SRC
         /*
          * JC rq dump after balance detach
          * dump src_rq after detaching from it
@@ -8914,7 +8915,7 @@ more_balance:
             struct cfs_rq *cfs = &rq->cfs;
             int pc;
             printk(KERN_DEBUG
-                    "%lld src c%d rq: "
+                    "%lld lbsrc c%d rq: "
                     "%d, %lu, %llu, "
                     "%lu, %lu, %lu, %lu, %lu", 
                     ktime_get(), cpu, 
@@ -8929,7 +8930,7 @@ more_balance:
                 task = list_entry(pos, struct task_struct, se.group_node);
                 se = task->se;
                 printk(KERN_DEBUG 
-                        "%lld src c%d p%d/%d: "
+                        "%lld lbsrc c%d p%d/%d: "
                         "%u, %u, %llu, %llu, "
                         "%d, %lu, " 
                         "%u, %d, %lu",
@@ -8941,6 +8942,7 @@ more_balance:
                 pc++;
             }
         }
+#endif
 
 		/*
 		 * We've detached some tasks from busiest_rq. Every
@@ -8958,6 +8960,7 @@ more_balance:
 		}
 
 
+#ifdef JC_LB_DST
         /*
          * JC rq dump after balance attach
          * dump dst_rq(this_rq) after attaching to it
@@ -8969,7 +8972,7 @@ more_balance:
             struct cfs_rq *cfs = &rq->cfs;
             int pc;
             printk(KERN_DEBUG
-                    "%lld dst c%d rq: "
+                    "%lld lbdst c%d rq: "
                     "%d, %lu, %llu, "
                     "%lu, %lu, %lu, %lu, %lu", 
                     ktime_get(), cpu, 
@@ -8984,7 +8987,7 @@ more_balance:
                 task = list_entry(pos, struct task_struct, se.group_node);
                 se = task->se;
                 printk(KERN_DEBUG 
-                        "%lld dst c%d p%d/%d: "
+                        "%lld lbdst c%d p%d/%d: "
                         "%u, %u, %llu, %llu, "
                         "%d, %lu, " 
                         "%u, %d, %lu",
@@ -8996,6 +8999,7 @@ more_balance:
                 pc++;
             }
         }
+#endif
 
 
 		local_irq_restore(rf.flags);
