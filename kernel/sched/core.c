@@ -3479,6 +3479,7 @@ static void __sched notrace __schedule(bool preempt)
 	clear_tsk_need_resched(prev);
 	clear_preempt_need_resched();
 
+#ifdef JC_SCHED_CORE
 	/*
 	 * JC rq dump after context switch
 	 */
@@ -3538,6 +3539,7 @@ static void __sched notrace __schedule(bool preempt)
             }
         }
     }
+#endif
         /*
         while (left) {
             struct sched_entity *se = rb_entry(left, struct sched_entity, run_node);

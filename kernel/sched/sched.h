@@ -92,6 +92,8 @@ extern unsigned long calc_load_update;
 extern atomic_long_t calc_load_tasks;
 
 #define JC_LB_DST
+#define JC_LB_SRC
+#define JC_SCHED_CORE
 extern int jc_is_logging; 
 
 extern void calc_global_load_tick(struct rq *this_rq);
