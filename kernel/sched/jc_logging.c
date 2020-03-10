@@ -35,7 +35,7 @@ SYSCALL_DEFINE1(jc_sched, int, start)
 
     struct subprocess_info *info;
     int ret;
-    char *argv[] = { "/root/ret205", "help!", NULL };
+    char *argv[] = { "/root/um_helper", "help!", NULL };
     static char *envp[] = {
         "HOME=/",
         "TERM=linux",
@@ -50,10 +50,11 @@ SYSCALL_DEFINE1(jc_sched, int, start)
     }
 
     ret = call_usermodehelper_exec(info, UMH_WAIT_PROC);
-    if (512 == ret)
-        printk("Success");
-    else
-        printk("Failure");
+    printk("return policy %d\n", ret);
+    /* if (512 == ret) */
+        /* printk("Success"); */
+    /* else */
+        /* printk("Failure"); */
 
     return 0;
 

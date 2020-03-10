@@ -7421,14 +7421,6 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
 		return 0;
 	}
 
-    char *argv[] = { "/root/ret205", "help!", NULL };
-    static char *envp[] = {
-        "HOME=/",
-        "TERM=linux",
-        "PATH=/sbin:/bin:/usr/sbin:/usr/bin", 
-        NULL
-    };
-
 	/*
 	 * Aggressive migration if:
 	 * 1) destination numa is preferred
